@@ -41,42 +41,13 @@ DATA_DIR = './data'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
-# # make models for signs
-
-# cap = cv2.VideoCapture(0)    
-# print('Collecting images for sign ')
-
-# done = False
-# model = mp_holistic.Holistic(min_detection_confidence = 0.3, min_tracking_confidence = 0.3)
-# while cap.isOpened():
-#     ret, frame = cap.read()
-#     image, results = mediapipe_det(frame, model)
-#     draw_lms(image, results)
-#     cv2.putText(frame, 'Ready? Press "S" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
-#                 cv2.LINE_AA)
-#     cv2.imshow('Sign render frame', frame)
-#     if cv2.waitKey(25) == ord('s'):
-#         break
-
-#     counter = 0
-#     while counter < 30:
-#         ret, frame = cap.read()
-#         cv2.imshow('Sign render frame', frame)
-#         cv2.waitKey(25)
-#         cv2.imwrite(os.path.join(DATA_DIR, str(j), '{}.jpg'.format(counter)), frame)
-
-#         counter += 1
-
-# cap.release()
-# cv2.destroyAllWindows()
-
 
 signs = np.array(['apple', 'orange' ])
 no_sequences = 30
 sequence_length = 30
 
 
-# make folders for everything
+# make folders for everything and save all images for each sign
 
 for sign in signs:
     for sequence in range(no_sequences):
