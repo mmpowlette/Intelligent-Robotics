@@ -116,7 +116,7 @@ else:
 
 NAOhandle =sim.getObject('/NAO/script')
 count = 0
-print (count)
 while count != 1000:
     sim.callScriptFunction(funct,NAOhandle)
+    count +=1
 sim.stopSimulation()
