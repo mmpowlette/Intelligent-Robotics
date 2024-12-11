@@ -38,7 +38,7 @@ mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-labels_dict = {0: 'Apple', 1: 'Orange'}
+labels_dict = {0: 'Bowl', 1: 'Cup'}
 model_dict = pickle.load(open('./model.p', 'rb'))
 model = model_dict['model']
 
