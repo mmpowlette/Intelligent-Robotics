@@ -41,19 +41,48 @@ DATA_DIR = './data'
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
+# # make models for signs
 
-signs = np.array(['apple', 'orange' ])
+# cap = cv2.VideoCapture(0)    
+# print('Collecting images for sign ')
+
+# done = False
+# model = mp_holistic.Holistic(min_detection_confidence = 0.3, min_tracking_confidence = 0.3)
+# while cap.isOpened():
+#     ret, frame = cap.read()
+#     image, results = mediapipe_det(frame, model)
+#     draw_lms(image, results)
+#     cv2.putText(frame, 'Ready? Press "S" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+#                 cv2.LINE_AA)
+#     cv2.imshow('Sign render frame', frame)
+#     if cv2.waitKey(25) == ord('s'):
+#         break
+
+#     counter = 0
+#     while counter < 30:
+#         ret, frame = cap.read()
+#         cv2.imshow('Sign render frame', frame)
+#         cv2.waitKey(25)
+#         cv2.imwrite(os.path.join(DATA_DIR, str(j), '{}.jpg'.format(counter)), frame)
+
+#         counter += 1
+
+# cap.release()
+# cv2.destroyAllWindows()
+
+
+signs = np.array(['Bowl', 'Cup' ])
 no_sequences = 30
 sequence_length = 30
 
 
-# make folders for everything and save all images for each sign
+# make folders for everything
 
 for sign in signs:
     for sequence in range(no_sequences):
         try: os.makedirs(os.path.join(DATA_DIR, sign, str(sequence)))
         except: pass
-
+#capture videos
 for sign in signs:
     for sequence in range (no_sequences):
             cap = cv2.VideoCapture(0) 
@@ -64,22 +93,33 @@ for sign in signs:
             while cap.isOpened():
                 ret, frame = cap.read()
                 image, results = mediapipe_det(frame, model)
-                draw_lms(image, results)
-                cv2.putText(frame, 'Ready? Press "S" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+                cv2.putText(frame, 'Press "S" and sign {} '.format(sign), (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
                             cv2.LINE_AA)
                 cv2.imshow('Sign render frame', frame)
-                if cv2.waitKey(25) == ord('s'):
+                if cv2.waitKey(10) == ord('s'):
+                    cv2.waitKey(2000)
                     break
 
+            cap.release()
+            cv2.destroyAllWindows()
+            cap2 = cv2.VideoCapture(0)
+
             counter = 0
-            while counter < sequence_length:
-                ret, frame = cap.read()
-                print('Say {}'.format(sign))
-                result_test = extractLMs(results)
-                np.save(os.path.join(DATA_DIR, sign, str(sequence),'{}'.format(counter)),result_test)
-                cv2.waitKey(50)
-                counter +=1
-                    
+            while cap2.isOpened():
+                ret, frame = cap2.read()
+                image, results = mediapipe_det(frame, model)
+                
+                cv2.putText(frame, 'SIGN', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+                        cv2.LINE_AA)
+                cv2.imshow('Sign render frame 2', frame)
+                while counter < sequence_length:
+                    ret, frame = cap.read()
+                    print('Say {}'.format(sign))
+                    result_test = extractLMs(results)
+                    np.save(os.path.join(DATA_DIR, sign, str(sequence),'{}'.format(counter)),result_test)
+                    cv2.waitKey(50)
+                    counter +=1
+                break   
                 
 
 
@@ -125,9 +165,9 @@ print(x_test.shape)
 print(x_train.shape)
 
 
-# f = open('model.p', 'wb')
-# pickle.dump({'model': model}, f)
-# f.close()
+f = open('model.p', 'wb')
+pickle.dump({'model': model}, f)
+f.close()
 
 
 

@@ -38,7 +38,7 @@ mp_holistic = mp.solutions.holistic
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 
-labels_dict = {0: 'Bowl', 1: 'Cup'}
+labels_dict = {0: 'Bowl', 1: 'Cups'}
 model_dict = pickle.load(open('./model.p', 'rb'))
 model = model_dict['model']
 
@@ -57,66 +57,81 @@ holistic = mp_holistic.Holistic(min_detection_confidence = 0.3, min_tracking_con
 while cap.isOpened():
     ret, frame = cap.read()
     image, results = mediapipe_det(frame, holistic)
-    cv2.putText(frame, 'Ready? Press "S" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+    cv2.putText(frame, 'Press "S" and show sign', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
                 cv2.LINE_AA)
     cv2.imshow('Sign render frame', frame)
     if cv2.waitKey(10) == ord('s'):
-        counter = 0
-        s=[]
-        while counter < 30:
-            ret, frame = cap.read()
-            cv2.imshow('Sign render frame', frame)
-            s.append(extractLMs(results))
-            cv2.waitKey(20)
+        cv2.waitKey(2000)
+        break 
 
-            counter += 1
-        for i in range (30):
-            sign.append((np.array(s)))
+cap.release()
+cv2.destroyAllWindows()
+cap2 = cv2.VideoCapture(0)
 
-        nsamples, nx, ny = np.array(sign).shape
-        d2_sign = np.array(sign).reshape((nsamples,nx*ny))   
-
-
-        result = mode( model.predict((np.array(d2_sign))))
-        break
-
+counter = 0
+s=[]
+while cap2.isOpened():
+    ret, frame = cap2.read()
+    image, results = mediapipe_det(frame, holistic)
     
+    cv2.putText(frame, 'Say Cheese', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+            cv2.LINE_AA)
+    cv2.imshow('Sign render frame 2', frame)
+    while counter < 30:
+        
+        ret, frame = cap2.read()
+        cv2.imshow('Sign render frame', frame)
+        s.append(extractLMs(results))
+        cv2.waitKey(20)
+
+        counter += 1
+    for i in range (30):
+        sign.append((np.array(s)))
+
+    nsamples, nx, ny = np.array(sign).shape
+    d2_sign = np.array(sign).reshape((nsamples,nx*ny))   
+
+
+    result = mode( model.predict((np.array(d2_sign))))
+
+    break
 
 
         #res = model.predict(x_test) 
-cap.release()
+cap2.release()
 cv2.destroyAllWindows()
 
-
+print(result)
 
 # run simulation of object chosen
 
-# connect to simulation
-result=0
-if result == 0:
-    funct = 'bowl_path'
-    funct2 ='bowl_thread'
-if result == 1:
-    funct ='cup_path'
-    funct2 ='cup_thread'
+# connect to simulation 
 
-print(labels_dict[result])
-print("program started ")
+# if result == 0:
+#     funct = 'bowl_path'
+#     funct2 ='bowl_thread'
+# if result == 1:
+#     funct ='cup_path'
+#     funct2 ='cup_thread'
 
-clientID = RemoteAPIClient()
-sim = clientID.require('sim')
+# print(labels_dict[result])
+# print("program started ")
 
-sim.startSimulation()
+# clientID = RemoteAPIClient()
+# sim = clientID.require('sim')
 
-if clientID!=-1:
-    print("Connected to the remote API server")
-else:
-    print("Not connected to the remote API server")
-    sys.exit("Could not connect")
+# sim.startSimulation()
 
-NAOhandle =sim.getObject('/NAO/script')
-count = 0
-while count != 1000:
-    sim.callScriptFunction(funct,NAOhandle)
-    count +=1
-sim.stopSimulation()
+# if clientID!=-1:
+#     print("Connected to the remote API server")
+# else:
+#     print("Not connected to the remote API server")
+#     sys.exit("Could not connect")
+
+# NAOhandle =sim.getObject('/NAO/script')
+# count = 0
+# print (count)
+# while count != 1000:
+#     sim.callScriptFunction(funct,NAOhandle)
+#     count +=1 
+# sim.stopSimulation()
